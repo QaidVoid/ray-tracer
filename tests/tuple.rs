@@ -90,4 +90,46 @@ mod tests {
         let a = Tuple::new(1., -2., 3., -4.);
         assert_eq!(a / 2., Tuple::new(0.5, -1., 1.5, -2.));
     }
+
+    #[test]
+    fn vec_magnitude() {
+        let v = Tuple::vector(1., 0., 0.);
+        assert_eq!(v.magnitude(), 1.);
+
+        let v = Tuple::vector(0., 1., 0.);
+        assert_eq!(v.magnitude(), 1.);
+
+        let v = Tuple::vector(0., 0., 1.);
+        assert_eq!(v.magnitude(), 1.);
+
+        let v = Tuple::vector(1., 2., 3.);
+        assert_eq!(v.magnitude(), 14_f32.sqrt());
+
+        let v = Tuple::vector(-1., -2., -3.);
+        assert_eq!(v.magnitude(), 14_f32.sqrt());
+    }
+
+    #[test]
+    fn vec_normalize() {
+        let v = Tuple::vector(4., 0., 0.);
+        assert_eq!(v.normalize(), Tuple::vector(1., 0., 0.));
+
+        let v = Tuple::vector(1., 2., 3.);
+        assert_eq!(v.normalize(), Tuple::vector(0.26726, 0.53452, 0.80178));
+    }
+
+    #[test]
+    fn vec_dot() {
+        let a = Tuple::vector(1., 2., 3.);
+        let b = Tuple::vector(2., 3., 4.);
+        assert_eq!(a.dot(&b), 20.);
+    }
+
+    #[test]
+    fn vec_cross() {
+        let a = Tuple::vector(1., 2., 3.);
+        let b = Tuple::vector(2., 3., 4.);
+        assert_eq!(a.cross(&b), Tuple::vector(-1., 2., -1.));
+        assert_eq!(b.cross(&a), Tuple::vector(1., -2., 1.));
+    }
 }

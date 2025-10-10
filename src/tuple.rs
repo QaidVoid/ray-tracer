@@ -1,6 +1,8 @@
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
-#[derive(Clone, Debug, PartialEq)]
+pub const EPSILON: f32 = 1e-5;
+
+#[derive(Clone, Debug)]
 pub struct Tuple {
     pub x: f32,
     pub y: f32,
@@ -32,6 +34,27 @@ impl Tuple {
 
     pub fn vector(x: f32, y: f32, z: f32) -> Self {
         Self::new(x, y, z, 0.)
+    }
+
+    pub fn magnitude(&self) -> f32 {
+        (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt()
+    }
+
+    pub fn normalize(&self) -> Self {
+        let magnitude = self.magnitude();
+        Self::vector(self.x / magnitude, self.y / magnitude, self.z / magnitude)
+    }
+
+    pub fn dot(&self, other: &Self) -> f32 {
+        self.x * other.x + self.y * other.y + self.z * other.z + self.w * other.w
+    }
+
+    pub fn cross(&self, other: &Self) -> Self {
+        Self::vector(
+            self.y * other.z - self.z * other.y,
+            self.z * other.x - self.x * other.z,
+            self.x * other.y - self.y * other.x,
+        )
     }
 }
 
@@ -82,5 +105,14 @@ impl Div<f32> for Tuple {
 
     fn div(self, rhs: f32) -> Self::Output {
         Self::new(self.x / rhs, self.y / rhs, self.z / rhs, self.w / rhs)
+    }
+}
+
+impl PartialEq for Tuple {
+    fn eq(&self, other: &Self) -> bool {
+        (self.x - other.x).abs() < EPSILON
+            && (self.y - other.y).abs() < EPSILON
+            && (self.z - other.z).abs() < EPSILON
+            && (self.w - other.w).abs() < EPSILON
     }
 }
