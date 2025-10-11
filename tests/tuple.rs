@@ -8,8 +8,8 @@ fn tuple_is_point() {
     assert_eq!(a.y, -4.2);
     assert_eq!(a.z, 3.1);
     assert_eq!(a.w, 1.);
-    assert!(a == Point::new(x, y, z));
-    assert!(a != Vector::new(x, y, z));
+    assert_eq!(a, Point::new(x, y, z));
+    assert_ne!(a, Vector::new(x, y, z));
 }
 
 #[test]
@@ -20,8 +20,8 @@ fn tuple_is_vector() {
     assert_eq!(a.y, -4.2);
     assert_eq!(a.z, 3.1);
     assert_eq!(a.w, 0.);
-    assert!(a == Vector::new(x, y, z));
-    assert!(a != Point::new(x, y, z));
+    assert_eq!(a, Vector::new(x, y, z));
+    assert_ne!(a, Point::new(x, y, z));
 }
 
 #[test]

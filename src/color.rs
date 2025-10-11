@@ -1,7 +1,4 @@
-use std::{
-    fmt::{Display, Formatter},
-    ops::{Add, Mul, Sub},
-};
+use std::ops::{Add, Mul, Sub};
 
 use crate::EPSILON;
 
