@@ -1,4 +1,4 @@
-use std::ops::{Add, Deref, Sub};
+use std::ops::{Add, Deref, Mul, Sub};
 
 use crate::tuple::inner::Tuple;
 
@@ -71,5 +71,13 @@ impl Sub for Vector {
 
     fn sub(self, rhs: Vector) -> Self::Output {
         Vector(self.0 - rhs.0)
+    }
+}
+
+impl Mul<f32> for Vector {
+    type Output = Vector;
+
+    fn mul(self, rhs: f32) -> Self::Output {
+        Vector(self.0 * rhs)
     }
 }

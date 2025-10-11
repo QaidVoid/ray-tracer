@@ -1,8 +1,11 @@
-use std::ops::{Add, Mul, Sub};
+use std::{
+    fmt::{Display, Formatter},
+    ops::{Add, Mul, Sub},
+};
 
 use crate::EPSILON;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Color {
     pub r: f32,
     pub g: f32,
@@ -20,6 +23,11 @@ impl Color {
 
     fn apply_op(&self, rhs: Self, op: impl Fn(f32, f32) -> f32) -> Self {
         Self::new(op(self.r, rhs.r), op(self.g, rhs.g), op(self.b, rhs.b))
+    }
+
+    pub fn to_rgb8(&self) -> [u8; 3] {
+        let scale = |c: f32| (c.clamp(0., 1.) * 255.0).round() as u8;
+        [scale(self.r), scale(self.g), scale(self.b)]
     }
 }
 
