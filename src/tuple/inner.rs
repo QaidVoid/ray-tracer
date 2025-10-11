@@ -1,6 +1,6 @@
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
-pub const EPSILON: f32 = 1e-5;
+use crate::EPSILON;
 
 #[derive(Clone, Copy, Debug, PartialOrd)]
 pub struct Tuple {
