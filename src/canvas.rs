@@ -1,3 +1,5 @@
+use std::fmt::Write as _;
+
 use crate::color::Color;
 
 #[derive(Debug, Default)]
@@ -37,7 +39,7 @@ impl Canvas {
 
         // PPM header
         ppm.push_str("P3\n");
-        ppm.push_str(&format!("{} {}\n", self.width, self.height));
+        let _ = writeln!(ppm, "{} {}", self.width, self.height);
         ppm.push_str("255\n");
 
         for y in 0..self.height {
@@ -50,7 +52,7 @@ impl Canvas {
 
                 for c in rgb {
                     let value = c.to_string();
-                    let space_len = if line.is_empty() { 0 } else { 1 };
+                    let space_len = usize::from(!line.is_empty());
                     let len = line.len() + space_len + value.len();
 
                     if len > 70 {

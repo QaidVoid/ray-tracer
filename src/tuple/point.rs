@@ -38,7 +38,7 @@ impl PartialEq<Tuple> for Point {
 }
 
 impl Add<Vector> for Point {
-    type Output = Point;
+    type Output = Self;
 
     fn add(self, rhs: Vector) -> Self::Output {
         Point(self.0 + rhs.0)
@@ -48,13 +48,13 @@ impl Add<Vector> for Point {
 impl Sub for Point {
     type Output = Vector;
 
-    fn sub(self, rhs: Point) -> Self::Output {
+    fn sub(self, rhs: Self) -> Self::Output {
         Vector(self.0 - rhs.0)
     }
 }
 
 impl Sub<Vector> for Point {
-    type Output = Point;
+    type Output = Self;
 
     fn sub(self, rhs: Vector) -> Self::Output {
         Self(self.0 - rhs.0)

@@ -6,12 +6,14 @@ use crate::tuple::inner::Tuple;
 pub struct Vector(pub Tuple);
 
 impl Vector {
-    pub fn new(x: f32, y: f32, z: f32) -> Self {
+    pub const fn new(x: f32, y: f32, z: f32) -> Self {
         Self(Tuple::new(x, y, z, 0.))
     }
 
     pub fn magnitude(&self) -> f32 {
-        (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt()
+        self.x
+            .mul_add(self.x, self.y.mul_add(self.y, self.z.powi(2)))
+            .sqrt()
     }
 
     pub fn normalize(&self) -> Self {
@@ -20,14 +22,15 @@ impl Vector {
     }
 
     pub fn dot(&self, other: &Self) -> f32 {
-        self.x * other.x + self.y * other.y + self.z * other.z
+        self.x
+            .mul_add(other.x, self.y.mul_add(other.y, self.z * other.z))
     }
 
     pub fn cross(&self, other: &Self) -> Self {
         Self::new(
-            self.y * other.z - self.z * other.y,
-            self.z * other.x - self.x * other.z,
-            self.x * other.y - self.y * other.x,
+            self.y.mul_add(other.z, -self.z * other.y),
+            self.z.mul_add(other.x, -self.x * other.z),
+            self.x.mul_add(other.y, -self.y * other.x),
         )
     }
 }
@@ -58,26 +61,26 @@ impl PartialEq<Tuple> for Vector {
     }
 }
 
-impl Add<Vector> for Vector {
-    type Output = Vector;
+impl Add for Vector {
+    type Output = Self;
 
-    fn add(self, rhs: Vector) -> Self::Output {
-        Vector(self.0 + rhs.0)
+    fn add(self, rhs: Self) -> Self::Output {
+        Self(self.0 + rhs.0)
     }
 }
 
 impl Sub for Vector {
-    type Output = Vector;
+    type Output = Self;
 
-    fn sub(self, rhs: Vector) -> Self::Output {
-        Vector(self.0 - rhs.0)
+    fn sub(self, rhs: Self) -> Self::Output {
+        Self(self.0 - rhs.0)
     }
 }
 
 impl Mul<f32> for Vector {
-    type Output = Vector;
+    type Output = Self;
 
     fn mul(self, rhs: f32) -> Self::Output {
-        Vector(self.0 * rhs)
+        Self(self.0 * rhs)
     }
 }

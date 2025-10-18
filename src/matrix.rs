@@ -28,23 +28,23 @@ impl Matrix {
         self.data[row * self.cols + col] = value;
     }
 
-    pub fn rows(&self) -> usize {
+    pub const fn rows(&self) -> usize {
         self.rows
     }
 
-    pub fn cols(&self) -> usize {
+    pub const fn cols(&self) -> usize {
         self.cols
     }
 
     pub fn identity(rows: usize, cols: usize) -> Self {
         let mut data = vec![0.; rows * cols];
-        for row in 0..rows {
-            for col in 0..cols {
+        (0..rows).for_each(|row| {
+            (0..cols).for_each(|col| {
                 if row == col {
                     data[row * cols + col] = 1.;
                 }
-            }
-        }
+            });
+        });
 
         Self {
             data,
@@ -55,11 +55,11 @@ impl Matrix {
 
     pub fn transpose(&self) -> Self {
         let mut data = vec![0.; self.cols * self.rows];
-        for row in 0..self.rows {
-            for col in 0..self.cols {
+        (0..self.rows).for_each(|row| {
+            (0..self.cols).for_each(|col| {
                 data[col * self.rows + row] = self[row][col];
-            }
-        }
+            });
+        });
         Self {
             data,
             rows: self.cols,
@@ -138,10 +138,10 @@ impl Mul for Matrix {
 
         let rhs_t = rhs.transpose().data;
 
-        let mut result = Matrix::new(rows, cols);
-        for row in 0..rows {
+        let mut result = Self::new(rows, cols);
+        (0..rows).for_each(|row| {
             let self_row = &self[row];
-            for col in 0..cols {
+            (0..cols).for_each(|col| {
                 let rhs_col = &rhs_t[col * shared..(col + 1) * shared];
                 let mut sum = 0.;
 
@@ -150,8 +150,8 @@ impl Mul for Matrix {
                 }
 
                 result[row][col] = sum;
-            }
-        }
+            });
+        });
 
         result
     }
@@ -162,12 +162,15 @@ impl Mul<Tuple> for Matrix {
 
     fn mul(self, rhs: Tuple) -> Self::Output {
         assert_eq!(self.cols, 4, "Matrix must be 4x4");
-        let (x, y, z, w) = (rhs.x, rhs.y, rhs.z, rhs.w);
-        let r0 = self.data[0] * x + self.data[1] * y + self.data[2] * z + self.data[3] * w;
-        let r1 = self.data[4] * x + self.data[5] * y + self.data[6] * z + self.data[7] * w;
-        let r2 = self.data[8] * x + self.data[9] * y + self.data[10] * z + self.data[11] * w;
-        let r3 = self.data[12] * x + self.data[13] * y + self.data[14] * z + self.data[15] * w;
+        let v = [rhs.x, rhs.y, rhs.z, rhs.w];
+        let mut result = [0.; 4];
 
-        Tuple::new(r0, r1, r2, r3)
+        (0..4).for_each(|row| {
+            (0..4).for_each(|col| {
+                result[row] += self.data[row * 4 + col] * v[col];
+            });
+        });
+
+        Tuple::new(result[0], result[1], result[2], result[3])
     }
 }
