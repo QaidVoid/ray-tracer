@@ -66,6 +66,50 @@ impl Matrix {
             cols: self.rows,
         }
     }
+
+    pub fn determinant(&self) -> f32 {
+        assert!(
+            self.rows == self.cols,
+            "Determinant is only defined for square matrices"
+        );
+
+        match self.rows {
+            1 => self.data[0],
+            2 => self.data[0] * self.data[3] - self.data[1] * self.data[2],
+            n => (0..n).map(|col| self[0][col] * self.cofactor(0, col)).sum(),
+        }
+    }
+
+    pub fn submatrix(&self, row: usize, col: usize) -> Self {
+        let iter = self
+            .data
+            .chunks(self.cols)
+            .enumerate()
+            .filter(|(r, _)| *r != row)
+            .flat_map(|(_, r)| {
+                r.iter()
+                    .enumerate()
+                    .filter(|(c, _)| *c != col)
+                    .map(|(_, &val)| val)
+            });
+
+        let data = iter.into_iter().collect();
+
+        Self {
+            rows: self.rows - 1,
+            cols: self.cols - 1,
+            data,
+        }
+    }
+
+    pub fn minor(&self, row: usize, col: usize) -> f32 {
+        self.submatrix(row, col).determinant()
+    }
+
+    pub fn cofactor(&self, row: usize, col: usize) -> f32 {
+        let sign = if (row + col) & 1 == 0 { 1. } else { -1. };
+        sign * self.minor(row, col)
+    }
 }
 
 impl Index<usize> for Matrix {
@@ -103,19 +147,16 @@ where
         let rows = iter.size_hint().0;
         let mut data = Vec::new();
         let mut cols = None;
-        let mut actual_rows = 0;
 
         iter.for_each(|row| {
-            let row_vec = row.into_iter().map(Into::into).collect::<Vec<_>>();
+            let mut row_vec = row.into_iter().map(Into::into).collect::<Vec<_>>();
 
             if let Some(cols) = cols {
                 assert_eq!(cols, row_vec.len(), "All rows must have same length");
             }
 
             cols = Some(row_vec.len());
-            data.reserve(row_vec.len() * rows);
-            data.extend(row_vec);
-            actual_rows += 1;
+            data.append(&mut row_vec);
         });
 
         Self {
